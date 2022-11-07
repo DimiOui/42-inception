@@ -1,0 +1,84 @@
+version: '3.1'
+
+#https://docs.docker.com/compose/compose-file/build/
+#https://openclassrooms.com/fr/courses/2035766-optimisez-votre-deploiement-en-creant-des-conteneurs-avec-docker/6211677-creez-un-fichier-docker-compose-pour-orchestrer-vos-conteneurs
+
+services:
+
+#-------------- MARIADB -------------#
+#https://www.youtube.com/watch?v=Zk1CUU2ivqc
+#https://mariadb.com/kb/en/setting-up-a-lamp-stack-with-docker-compose/
+    mariadb:
+        build:
+            context: ./requirements/mariadb
+            dockerfile: Dockerfile
+        container_name: "mariadb"
+        restart: on-failure
+        volumes:
+            - mariadb_data:/var/lib/mysql
+        expose:
+            - "3306"
+        env_file:
+            - .env
+        networks:
+            - inception
+
+#------------- WORDPRESS ------------#
+#https://www.youtube.com/watch?v=yWNUu7zHW6g&list=PLn6POgpklwWqaC1pdx02SrrgOaL2ZL7G0&index=11
+#https://openclassrooms.com/fr/courses/2035766-optimisez-votre-deploiement-en-creant-des-conteneurs-avec-docker/6211677-creez-un-fichier-docker-compose-pour-orchestrer-vos-conteneurs
+    wordpress:
+        build:
+            context: ./requirements/wordpress
+            dockerfile: Dockerfile
+        container_name: "wordpress"
+        depends_on:
+            - mariadb
+        restart: on-failure
+        env_file:
+            - .env
+        volumes:
+            - wordpress_data:/var/www/html
+        expose:
+            - "9000"
+        networks:
+            - inception
+
+#--------------- NGINX --------------#
+    nginx:
+        build:
+            context: ./requirements/nginx
+            dockerfile: Dockerfile
+        container_name: "nginx"
+        depends_on:
+            - wordpress
+        restart: on-failure
+        env_file:
+            - .env
+        ports:
+            - "443:443"
+        volumes:
+            - wordpress_data:/var/www/html
+        networks:
+            - inception
+
+# #--------------- NETWORKS --------------#
+
+networks:
+    inception:
+        driver: bridge #default
+
+# #--------------- VOLUMES --------------#
+
+volumes:
+        mariadb_data:
+            driver: local
+            driver_opts:
+                o: bind
+                type: none
+                device: /home/dpaccagn/data/mysql
+        wordpress_data:
+            driver: local
+            driver_opts:
+                type: none
+                device: /home/dpaccagn/data/wordpress
+                o: bind
