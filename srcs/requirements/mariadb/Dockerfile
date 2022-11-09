@@ -7,6 +7,8 @@ RUN apk add --upgrade apk-tools && \
 RUN apk add	mariadb \
 	mariadb-client \
 	mariadb-server-utils \
+	linux-pam \
+	linux-pam-dev \
 	bash
 
 COPY tools/mariadb_init.sh mariadb_init.sh
@@ -21,4 +23,3 @@ COPY conf/my.cnf /etc/my.cnf
 EXPOSE 3306
 
 CMD ["./mariadb_init.sh"]
-

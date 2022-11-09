@@ -16,7 +16,9 @@ RUN		mkdir /www && \
 RUN		openssl req -sha256 -x509 -nodes -days 365 -newkey rsa:2048 \
 		-keyout /var/lib/nginx/nginx_key.key \
 		-out /var/lib/nginx/nginx_cert.pem \
-		-subj "/C=FR/ST=Paris/L=Paris/O=42/OU=student/CN=localhost"
+		-subj "/C=FR/ST=Paris/L=Paris/O=42/OU=student/CN=localhost" && \
+		ln -sf /dev/stdout /var/log/nginx/access.log && \
+		ln -sf /dev/stderr /var/log/nginx/error.log
 
 COPY	conf/nginx.conf /etc/nginx/nginx.conf
 ARG		DOMAIN_NAME
