@@ -1,22 +1,22 @@
 #!/bin/bash
 
-if [ ! -d "/var/lib/mysql/${MYSQL_DB}" ]; then
+if [ ! -d "/var/lib/mysql/${MYSQL_PATH}" ]; then
+    #Installing Mariadb database
+    mysql_install_db > /dev/null
+    temp=`mktemp`
+    cat << EOF > $temp
 
-    /usr/bin/mysqld_safe --datadir=/var/lib/mysql &
-
-    until mysqladmin ping; do
-         sleep 2
-    done
-
-	mysql -u root << EOF
-    CREATE DATABASE ${MYSQL_DB};
-    CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
-    GRANT ALL PRIVILEGES ON ${MYSQL_DB}.* to '${MYSQL_USER}'@'%';
-    ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
-    FLUSH PRIVILEGES;
+CREATE DATABASE IF NOT EXISTS ${MYSQL_DB};
+ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost';
+CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
+GRANT ALL PRIVILEGES ON ${MYSQL_DB}.* to '${MYSQL_USER}'@'%';
+FLUSH PRIVILEGES;
 EOF
-
-    mysqladmin shutdown
+    #Intitializing Mariadb database
+    mysqld --bootstrap < $temp && rm $temp
+else
+    echo "Mariadb Database already installed"
 fi
 
-exec "$@"
+mysqld --console

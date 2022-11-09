@@ -1,22 +1,24 @@
-FROM debian:buster
+FROM alpine:3.16
 
-RUN apt-get update
-RUN apt-get install -y \
-	mariadb-server \
+RUN apk update
+RUN apk add --upgrade apk-tools && \
+	apk upgrade --available
+
+RUN apk add	mariadb \
 	mariadb-client \
-	mariadb-common
+	mariadb-server-utils \
+	bash
 
-RUN mkdir -p /run/mysql /var/lib/mysql
-RUN chown -R mysql:mysql /run/mysql /var/lib/mysql
+COPY tools/mariadb_init.sh mariadb_init.sh
+RUN chmod +x mariadb_init.sh
 
-RUN	mysql_install_db --user=mysql --datadir=/var/lib/mysql --auth-root-authentication-method=normal --skip-test-db
+RUN mkdir -p /var/lib/mysql/data
+RUN chown -R mysql:mysql /var/lib/mysql/data
 
-COPY ./conf/my.cnf /etc/mysql/my.cnf
-COPY ./tools/mariadb_init.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/mariadb_init.sh
-
-ENTRYPOINT ["mariadb_init.sh"]
-
-CMD ["/usr/bin/mysqld_safe", "--datadir=/var/lib/mysql"]
+COPY conf/my.cnf /etc/mysql/my.cnf
+COPY conf/my.cnf /etc/my.cnf
 
 EXPOSE 3306
+
+CMD ["./mariadb_init.sh"]
+

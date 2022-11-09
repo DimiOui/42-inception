@@ -1,31 +1,34 @@
-FROM	debian:buster
+FROM	alpine:3.16
 
-RUN		apt-get update
-RUN		apt-get install -y mariadb-client \
+RUN		apk update
+RUN		apk add --upgrad apk-tools && \
+		apk upgrade --available
+
+RUN		apk add mariadb-client \
 		curl \
-		wget \
-		php7.3 \
-		php7.3-fpm \
-		php7.3-curl \
-		php7.3-mysql \
-		php7.3-mbstring \
-		php7.3-xml
-
-RUN		mkdir -p /var/www/html ; mkdir -p /run/php
-
-COPY	./conf/www.conf /etc/php/7.3/fpm/pool.d
+		bash \
+		php8 \
+		php8-dom \
+		php8-fpm \
+		php8-ftp \
+		php8-gd \
+		php8-iconv \
+		php8-mbstring \
+		php8-mongodb \
+		php8-mysqli \
+		php8-openssl \
+		php8-phar \
+		php8-zlib
 
 RUN		curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
 		chmod +x wp-cli.phar && \
 		mv wp-cli.phar /usr/local/bin/wp
 
-COPY	./tools/create_wp.sh /usr/local/bin/
-RUN		chmod +x /usr/local/bin/create_wp.sh
-
-ENTRYPOINT ["create_wp.sh"]
+COPY	tools/create_wp.sh /opt/create_wp.sh
+RUN		chmod +x /opt/create_wp.sh
 
 WORKDIR /var/www/html/
 
 EXPOSE 9000
 
-CMD ["/usr/sbin/php-fpm7.3", "-F"]
+CMD ["/opt/create_wp.sh"]

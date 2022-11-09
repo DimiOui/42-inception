@@ -1,27 +1,31 @@
 #!/bin/sh
 
-if [ -f /var/www/html/wp-config.php ]
+#Configuring php-fpm
+echo "listen = 9000 " >> /etc/php8/php-fpm.d/www.conf
+#Checking for mariadb
+while ! mariadb -h${MYSQL_HOSTNAME} -u${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DB} > /dev/null;
+do
+
+	sleep 2
+
+done
+
+if [ ! -f "index.php" ]
 then
-    echo "Wordpress is already installed"
-else
-	echo "Installing Wordpress"
-	wp core download --allow-root
-	wp core install http://wordpress.org/latest.tar.gz
-	echo "Wordpress sucessfully installed"
-
-	until	mysqladmin --user=${MYSQL_USER} \
-			--password=${MYSQL_PASSWORD} \
-			--host=mariadb ping; do
-		sleep 2
-	done
-
+	#Installing Wordpress
+	wp core download	--path="/var/www/html"
 	wp config create	--dbname=${MYSQL_DB} \
 						--dbuser=${MYSQL_USER} \
 						--dbpass=${MYSQL_PASSWORD} \
-						--dbhost=mariadb \
+						--dbhost=${MYSQL_HOSTNAME} \
 						--allow-root
+	if [ ! -f "wp-config.php" ]
+	then
 
-	wp core install		--url=${DOMAIN_NAME} \
+		return 1
+
+	fi
+	wp core install		--url="dpaccagn.42.fr" \
 						--title=${WP_TITLE} \
 						--admin_user=${WP_ADMIN} \
 						--admin_password=${WP_ADMIN_PASSWORD} \
@@ -32,18 +36,18 @@ else
 	wp user create 		${WP_USER} ${WP_USER_EMAIL} \
 						--user_pass=${WP_USER_PASSWORD} \
 						--role=author \
-						--allow-root
-
 
 	wp theme install "twentyseventeen" --activate --allow-root
 
+	#wp search-replace 'http://dpaccagn.42.fr' 'https://dpaccagn.42.fr' > /dev/null
+
 	wp post generate	--count=1 \
 						--post_author="dpaccagn" \
-						--post_title="Hello World" \
-						--post_content="This is my first post" \
+						--post_title="Peanut Butter" \
+						--post_content="Miam miam le peanut butter" \
 						--post_status=publish \
 						--allow-root
 
 fi
 
-exec "$@"
+echo "Running php-fpm" && php-fpm8 -FR
