@@ -1,12 +1,12 @@
 FROM alpine:3.16
 
-RUN apk update
-RUN apk add --upgrade apk-tools && \
-	apk upgrade --available
+RUN		apk update
+RUN		apk add --upgrade apk-tools && \
+		apk upgrade --available
 
-RUN	apk add nginx \
-	openssl \
-	php8-fpm
+RUN		apk add nginx \
+		openssl \
+		php8-fpm
 
 RUN		adduser -D -g 'www' www
 RUN		mkdir /www && \

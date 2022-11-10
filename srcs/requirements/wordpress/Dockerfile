@@ -27,7 +27,7 @@ RUN		curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
 COPY	tools/create_wp.sh /opt/create_wp.sh
 RUN		chmod +x /opt/create_wp.sh
 
-WORKDIR /var/www/html/
+WORKDIR	/var/www/html/
 
 EXPOSE 9000
 
