@@ -2,8 +2,6 @@
 
 #Configuring php-fpm
 echo "listen = 9000 " >> /etc/php8/php-fpm.d/www.conf
-sed -i "s/;error_log/error_log/" /etc/php8/php-fpm.conf
-ln -sf /dev/stderr /var/log/php8/error.log
 
 #Waiting for Mariadb
 while ! mariadb -h${MYSQL_HOSTNAME} -u${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DB} > /dev/null;
