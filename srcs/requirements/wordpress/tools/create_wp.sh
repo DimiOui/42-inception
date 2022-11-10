@@ -1,19 +1,19 @@
 #!/bin/sh
 
-echo "Configuring php-fpm"
+#Configuring php-fpm
 echo "listen = 9000 " >> /etc/php8/php-fpm.d/www.conf
 sed -i "s/;error_log/error_log/" /etc/php8/php-fpm.conf
 ln -sf /dev/stderr /var/log/php8/error.log
-echo "Checking for mariadb"
+
+#Waiting for Mariadb
 while ! mariadb -h${MYSQL_HOSTNAME} -u${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DB} > /dev/null;
 do
-	echo "waiting for mariadb"
 	sleep 2
 done
 
 if [ ! -f "index.php" ]
 then
-	echo "Installing Wordpress"
+	#Installing Wordpress
 	wp core download	--path="/var/www/html"
 	wp config create	--dbname=${MYSQL_DB} \
 						--dbuser=${MYSQL_USER} \
