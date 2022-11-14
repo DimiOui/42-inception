@@ -74,6 +74,25 @@ services:
             - $WP_VOLUME:/home/dpaccagn
         networks:
             - backend
+
+#--------------- CHATBOT --------------#
+    chatbot:
+        build:
+            context: ./requirements/chatbot/.
+        container_name: "chatbot"
+        init: true
+        depends_on:
+            - nginx
+        restart: on-failure
+        env_file:
+            - .env
+        ports:
+            - "9500:9500"
+        volumes:
+            - $CHATBOT_VOLUME
+        networks:
+            - backend
+
 #--------------- NETWORKS --------------#
 
 networks:
@@ -92,4 +111,9 @@ volumes:
             driver_opts:
                 type: none
                 device: /home/dpaccagn/data/wordpress
+                o: bind
+        chatbot_data:
+            driver_opts:
+                type: none
+                device: /home/dpaccagn/data/chatbot
                 o: bind
