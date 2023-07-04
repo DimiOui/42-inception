@@ -10,7 +10,7 @@ The project requires the following services:
 - Docker network to establish connections between containers
 - The containers should restart automatically in case of a crash. It is important to note that using `network: host`, `--link`, or `links`: is not allowed.
 
-The project also has additional requirements, including:
+With the requirements in mind, the project has additional features including:
 - Creating Docker images using Alpine as the base image for each service
 - Writing custom Dockerfiles, one per service, which will be called in the docker-compose.yml file via the Makefile
 - Setting up two users in the WordPress database, with one of them being the administrator
