@@ -33,12 +33,12 @@ To get started with this project, follow the steps below:
 git clone https://github.com/DimiOui/Inception.git
 ```
 
-3. Navigate to the project directory
+2. Navigate to the project directory
 ```
 cd <project_directory>
 ```
 
-5. Build the Docker containers and set up the entire application using the Makefile:
+3. Build the Docker containers and set up the entire application using the Makefile:
 ```
 make all
 ```
