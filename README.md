@@ -29,17 +29,17 @@ To get started with this project, follow the steps below:
 
 ### Installation
 1. Clone this repository to your local machine or VM:
-```
+```fish
 git clone https://github.com/DimiOui/Inception.git
 ```
 
 2. Navigate to the project directory
-```
+```fish
 cd <project_directory>
 ```
 
 3. Build the Docker containers and set up the entire application using the Makefile:
-```
+```fish
 make all
 ```
 
